@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PDF Compressor – Reduce PDF File Size Free | Compressly</title>
+  <title>PDF Compressor – Reduce PDF File Size Free | File Compressors</title>
   <meta name="description" content="Compress PDF files online for free. Reduce PDF size for email and sharing." />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
@@ -83,7 +83,7 @@
 <!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-inner">
-    <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a>
+    <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">File Compressors</span></a>
     <ul class="nav-links">
       <li><a href="image-compress.html">Image Compress</a></li>
       <li><a href="pdf-compress.html" class="active">PDF Compress</a></li>
@@ -248,7 +248,7 @@
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a>
+        <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">File Compressors</span></a>
         <p>Free, fast, and private online file compression tools. Your files never leave your device.</p>
       </div>
       <div class="footer-col"><h5>Compress</h5><ul><li><a href="image-compress.html">Image</a></li><li><a href="pdf-compress.html">PDF</a></li><li><a href="video-compress.html">Video</a></li></ul></div>
@@ -256,7 +256,7 @@
       <div class="footer-col"><h5>Info</h5><ul><li><a href="index.html#faq">FAQ</a></li><li><a href="#">Privacy</a></li></ul></div>
     </div>
     <div class="footer-bottom">
-      <span>© 2024 Compressly. All rights reserved.</span>
+      <span>© 2024 File Compressors. All rights reserved.</span>
       <span>🔒 Files never leave your device</span>
     </div>
   </div>
@@ -320,7 +320,7 @@ async function compressPDF() {
     const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
     if (document.getElementById('removeMeta').checked) {
       doc.setTitle(''); doc.setAuthor(''); doc.setSubject(''); doc.setKeywords([]);
-      doc.setProducer('Compressly'); doc.setCreator('Compressly');
+      doc.setProducer('File Compressors'); doc.setCreator('File Compressors');
     }
     const compressed = await doc.save({ useObjectStreams: true, addDefaultPage: false, objectsPerTick: 50 });
     compressedBytes = compressed;
