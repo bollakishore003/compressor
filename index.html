@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Compressly – Free Online File Compressor & Converter | Image, PDF, Video</title>
+  <meta name="description" content="Compress and convert images, PDFs, and videos instantly in your browser. Reduce JPG, PNG, WebP, PDF, MP4 file sizes by up to 90%. 100% free, private, no sign-up — files never leave your device." />
+  <meta name="keywords" content="image compressor, PDF compressor, video compressor, image converter, PDF converter, video converter, compress JPG, compress PNG, compress WebP, compress PDF online, reduce file size, convert JPG to PNG, convert PNG to WebP, Word to PDF, PDF to Word, video compression, free online compressor, browser-based compression, no upload file compressor, batch image compression, file size reducer" />
+  <meta name="author" content="Compressly" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#0f0f17" />
+  <link rel="canonical" href="https://compressly.app/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Compressly – Free Online File Compressor & Converter" />
+  <meta property="og:description" content="Compress and convert images, PDFs, and videos instantly in your browser. 100% free, private — files never leave your device." />
+  <meta property="og:url" content="https://compressly.app/" />
+  <meta property="og:site_name" content="Compressly" />
+  <meta property="og:image" content="https://compressly.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Compressly – Free Online File Compressor & Converter" />
+  <meta name="twitter:description" content="Compress images, PDFs & videos right in your browser. No uploads, no servers, no limits. 100% free." />
+  <meta name="twitter:image" content="https://compressly.app/og-image.png" />
+
+  <!-- Structured Data / JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Compressly",
+    "url": "https://compressly.app",
+    "description": "Free browser-based file compression and conversion tools for images, PDFs, and videos.",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Image compression (JPG, PNG, WebP)",
+      "PDF compression",
+      "Video compression (MP4, WebM, MOV)",
+      "Image format conversion",
+      "PDF to Word conversion",
+      "Word to PDF conversion",
+      "Video format conversion",
+      "Batch processing",
+      "100% browser-based processing",
+      "No file uploads to servers"
+    ]
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Index-only extras ── */
+
+    /* Floating tool preview cards in hero */
+    .hero-visual {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+    }
+
+    @media (min-width: 1100px) { .hero-visual { display: block; } }
+
+    .mini-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      backdrop-filter: blur(20px);
+      min-width: 200px;
+      margin-bottom: 12px;
+    }
+
+    .mini-card-1 { animation: float 5s ease-in-out infinite; }
+    .mini-card-2 { animation: float 6s ease-in-out infinite 1.5s; }
+    .mini-card-3 { animation: float 7s ease-in-out infinite 0.8s; }
+
+    .mini-icon {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .mini-info { flex: 1; }
+    .mini-name { font-size: 0.78rem; font-weight: 700; color: #f1f5f9; }
+    .mini-sub  { font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+    .mini-badge {
+      font-size: 0.7rem; font-weight: 800;
+      background: rgba(16,185,129,0.2);
+      border: 1px solid rgba(16,185,129,0.35);
+      color: #6ee7b7;
+      border-radius: 6px;
+      padding: 2px 7px;
+    }
+
+    /* Tool grid card hover colors */
+    .tool-card:nth-child(1):hover { border-color: rgba(124,58,237,0.5); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(124,58,237,0.15); }
+    .tool-card:nth-child(2):hover { border-color: rgba(239,68,68,0.5); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(239,68,68,0.1); }
+    .tool-card:nth-child(3):hover { border-color: rgba(6,182,212,0.5); box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 60px rgba(6,182,212,0.1); }
+
+    /* Gradient border on first card */
+    .tool-card-featured {
+      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(6,182,212,0.06)) !important;
+      border: 1px solid rgba(124,58,237,0.25) !important;
+    }
+
+    /* Section separator line */
+    .section-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Feature icons unique colors */
+    .fi-1 { background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.3); }
+    .fi-2 { background: rgba(6,182,212,0.15); border-color: rgba(6,182,212,0.3); }
+    .fi-3 { background: rgba(16,185,129,0.15); border-color: rgba(16,185,129,0.3); }
+    .fi-4 { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); }
+    .fi-5 { background: rgba(236,72,153,0.15); border-color: rgba(236,72,153,0.3); }
+    .fi-6 { background: rgba(79,70,229,0.15); border-color: rgba(79,70,229,0.3); }
+  </style>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">🗜️</div>
+      <span class="logo-text">Compressly</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="image-compress.html">Image Compress</a></li>
+      <li><a href="pdf-compress.html">PDF Compress</a></li>
+      <li><a href="video-compress.html">Video Compress</a></li>
+      <li><a href="pdf-convert.html">PDF Convert</a></li>
+      <li><a href="image-convert.html">Image Convert</a></li>
+      <li><a href="video-convert.html">Video Convert</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      100% Free &amp; Browser-Based — No Sign-up
+    </div>
+
+    <h1>
+      Compress Files<br/>
+      <span class="line-grad">Instantly &amp; Privately</span>
+    </h1>
+
+    <p>Compress images, PDFs &amp; videos, or convert between formats — all in your browser. Your files never leave your device.</p>
+
+    <div class="hero-actions">
+      <a href="image-compress.html" class="btn-hero btn-hero-primary">🖼️ Compress Images</a>
+      <a href="pdf-compress.html" class="btn-hero btn-hero-ghost">📄 Compress PDF</a>
+      <a href="video-compress.html" class="btn-hero btn-hero-ghost">🎬 Compress Video</a>
+    </div>
+
+    <div class="hero-trust">
+      <span>🔒 Files stay on your device</span>
+      <span class="trust-dot"></span>
+      <span>⚡ Instant processing</span>
+      <span class="trust-dot"></span>
+      <span>🆓 Forever free</span>
+      <span class="trust-dot"></span>
+      <span>📦 Batch support</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── POPULAR STRIP ── -->
+<div class="popular-strip">
+  <div class="popular-strip-inner">
+    <span class="popular-label">Popular</span>
+    <div class="popular-links">
+      <a href="image-compress.html" class="popular-link">🖼️ JPG Compressor</a>
+      <a href="pdf-compress.html" class="popular-link">📄 PDF Compressor</a>
+      <a href="video-compress.html" class="popular-link">🎬 Video Compressor</a>
+      <a href="image-convert.html" class="popular-link">🔄 Image Converter</a>
+      <a href="pdf-convert.html" class="popular-link">📝 Word → PDF</a>
+      <a href="video-convert.html" class="popular-link">🔄 Video Converter</a>
+    </div>
+  </div>
+</div>
+
+<!-- ── COMPRESS SECTION ── -->
+<section class="tools-section">
+  <div class="section-header">
+    <div class="section-eyebrow">Compress</div>
+    <h2>Reduce File Sizes — <span class="gradient-text">Instantly</span></h2>
+    <p>Compress images, PDFs, and videos with professional-grade tools that run 100% in your browser.</p>
+  </div>
+
+  <div class="tools-grid">
+
+    <a href="image-compress.html" class="tool-card tool-card-featured">
+      <div class="tool-icon icon-violet">🖼️</div>
+      <h3>Image Compressor</h3>
+      <p>Reduce JPG, PNG, and WebP file sizes by up to 90% while preserving visual quality. Batch compress multiple images at once.</p>
+      <span class="tool-card-link">Compress Images →</span>
+    </a>
+
+    <a href="pdf-compress.html" class="tool-card">
+      <div class="tool-icon icon-pink">📄</div>
+      <h3>PDF Compressor</h3>
+      <p>Shrink large PDF files for easy sharing via email or cloud storage. Adjustable compression levels from screen to prepress.</p>
+      <span class="tool-card-link">Compress PDF →</span>
+    </a>
+
+    <a href="video-compress.html" class="tool-card">
+      <div class="tool-icon icon-amber">🎬</div>
+      <h3>Video Compressor</h3>
+      <p>Reduce video file sizes with adjustable resolution, bitrate, and audio settings. Supports MP4, WebM, MOV, and AVI.</p>
+      <span class="tool-card-link">Compress Video →</span>
+    </a>
+
+  </div>
+</section>
+
+<div class="section-line"></div>
+
+<!-- ── CONVERT SECTION ── -->
+<section class="tools-section">
+  <div class="section-header">
+    <div class="section-eyebrow">Convert</div>
+    <h2>Convert Between <span class="gradient-text">Formats</span></h2>
+    <p>Transform your files between popular formats — images, documents, and videos.</p>
+  </div>
+
+  <div class="tools-grid">
+
+    <a href="image-convert.html" class="tool-card">
+      <div class="tool-icon icon-cyan">🔄</div>
+      <h3>Image Converter</h3>
+      <p>Convert between JPG, PNG, WebP, GIF, and BMP formats instantly. Quick-convert buttons for the most popular format pairs.</p>
+      <span class="tool-card-link">Convert Images →</span>
+    </a>
+
+    <a href="pdf-convert.html" class="tool-card">
+      <div class="tool-icon icon-blue">📑</div>
+      <h3>PDF Converter</h3>
+      <p>Convert Word documents to PDF and PDF files back to editable Word .docx — with preview, page size options, and instant download.</p>
+      <span class="tool-card-link">Convert PDF →</span>
+    </a>
+
+    <a href="video-convert.html" class="tool-card">
+      <div class="tool-icon icon-green">🎬</div>
+      <h3>Video Converter</h3>
+      <p>Convert videos between MP4, WebM, and other formats. Choose codecs, resolution, and quality settings.</p>
+      <span class="tool-card-link">Convert Video →</span>
+    </a>
+
+  </div>
+</section>
+
+<div class="section-line"></div>
+
+<!-- ── STATS BAR ── -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="val">100%</div>
+      <div class="lbl">Browser-Based</div>
+    </div>
+    <div class="stat-item">
+      <div class="val">0 KB</div>
+      <div class="lbl">Data Sent to Servers</div>
+    </div>
+    <div class="stat-item">
+      <div class="val">Up to 90%</div>
+      <div class="lbl">Size Reduction</div>
+    </div>
+    <div class="stat-item">
+      <div class="val">Free</div>
+      <div class="lbl">No Account Needed</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FEATURES ── -->
+<section class="features-section">
+  <div class="features-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">Why Compressly</div>
+      <h2>Built for <span class="gradient-text">Speed &amp; Privacy</span></h2>
+      <p>No compromises — fast, private, powerful, and completely free.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon fi-1">🔒</div>
+        <h4>100% Private</h4>
+        <p>Files are processed locally in your browser using JavaScript. Nothing is ever uploaded to any server.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-2">⚡</div>
+        <h4>Lightning Fast</h4>
+        <p>Client-side processing delivers instant results. No waiting for uploads, queues, or server responses.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-3">🆓</div>
+        <h4>Forever Free</h4>
+        <p>No subscriptions, no hidden costs, no watermarks. Every tool is completely free to use, always.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-4">📦</div>
+        <h4>Batch Processing</h4>
+        <p>Process dozens of files at once. Compress a whole folder of images and download as one ZIP.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-5">📱</div>
+        <h4>Works Everywhere</h4>
+        <p>Fully responsive — works perfectly on desktop, tablet, or mobile with no app install required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon fi-6">🎛️</div>
+        <h4>Full Control</h4>
+        <p>Adjust quality, dimensions, and output format with intuitive controls built into every tool.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-line"></div>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="testimonials-section">
+  <div class="section-header">
+    <div class="section-eyebrow">Testimonials</div>
+    <h2>Loved by <span class="gradient-text">Thousands</span></h2>
+    <p>Designers, developers, and marketers rely on Compressly every day.</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card">
+      <div class="t-quote">"</div>
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">Finally a tool that doesn't upload my client files to some random server. The image compressor is brilliant — I went from 4MB photos to under 200KB with no visible quality loss.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:rgba(124,58,237,0.2)">👩‍🎨</div>
+        <div>
+          <div class="author-name">Sarah M.</div>
+          <div class="author-role">Graphic Designer</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"</div>
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">I batch-compressed 200 product images for our e-commerce site in under 2 minutes. The quality settings are perfect and the interface is incredibly intuitive.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:rgba(6,182,212,0.2)">👨‍💻</div>
+        <div>
+          <div class="author-name">James K.</div>
+          <div class="author-role">Web Developer</div>
+        </div>
+      </div>
+    </div>
+    <div class="testimonial-card">
+      <div class="t-quote">"</div>
+      <div class="stars">★★★★★</div>
+      <p class="testimonial-text">The PDF compressor saved me — my 25MB presentation went down to 3MB so I could finally send it over email. No registration, no fuss. Absolutely perfect.</p>
+      <div class="testimonial-author">
+        <div class="author-avatar" style="background:rgba(16,185,129,0.2)">👩‍💼</div>
+        <div>
+          <div class="author-name">Priya L.</div>
+          <div class="author-role">Marketing Manager</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="faq-section" id="faq">
+  <div class="faq-inner">
+    <div class="section-header">
+      <div class="section-eyebrow">FAQ</div>
+      <h2>Common <span class="gradient-text">Questions</span></h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Are my files safe? Do you store them?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Absolutely. All file processing happens entirely in your browser using JavaScript. Your files are never uploaded to any server, and we have no way to access them. This is a fundamental design decision, not just a promise.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Is there a file size limit?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Since processing happens in the browser, the only limit is your device's available memory. Most modern devices can handle files up to several hundred MB. For very large files, a desktop with ample RAM works best.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          What image formats are supported?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Our image tools support JPG/JPEG, PNG, WebP, GIF, and BMP. For compression, JPG and PNG yield the best results. WebP is an excellent modern format choice for web use with the smallest file sizes.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          How much can I compress my files?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Results vary by file content. Typical results: JPG photos 60–85%, PNG graphics 30–70%, PDFs 40–80%. The quality slider lets you fine-tune the balance between file size and visual fidelity.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Can I process multiple files at once?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">Yes! The image compressor and converter support batch processing — just drop multiple files into the upload zone. Each file is processed individually and you can download them all at once as a ZIP archive.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Do I need to create an account?
+          <span class="faq-chevron">▼</span>
+        </button>
+        <div class="faq-answer">No. Compressly is completely free with no account or registration required. Just open any tool and start compressing immediately — no email, no password, no credit card.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA BANNER ── -->
+<section style="padding: 80px 2rem; background: var(--bg2); border-top: 1px solid var(--border); text-align: center; position: relative; overflow: hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 100% at 50% 50%, rgba(124,58,237,0.1), transparent);pointer-events:none"></div>
+  <div style="position:relative;max-width:600px;margin:0 auto">
+    <div class="section-eyebrow">Get Started</div>
+    <h2 style="margin-bottom:14px;color:var(--text-1)">Start Compressing <span class="gradient-text">Right Now</span></h2>
+    <p style="margin-bottom:36px">No sign-up. No downloads. Just open a tool and go.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="image-compress.html" class="btn-hero btn-hero-primary">🖼️ Compress Images</a>
+      <a href="pdf-compress.html" class="btn-hero btn-hero-ghost">📄 Compress PDF</a>
+      <a href="video-compress.html" class="btn-hero btn-hero-ghost">🎬 Compress Video</a>
+      <a href="image-convert.html" class="btn-hero btn-hero-ghost">🔄 Convert Format</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <div class="logo-icon">🗜️</div>
+          <span class="logo-text">Compressly</span>
+        </a>
+        <p>Free, fast, and private online file compression tools. All processing happens locally in your browser — your files never leave your device.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Compress</h5>
+        <ul>
+          <li><a href="image-compress.html">Image Compressor</a></li>
+          <li><a href="pdf-compress.html">PDF Compressor</a></li>
+          <li><a href="video-compress.html">Video Compressor</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Convert</h5>
+        <ul>
+          <li><a href="image-convert.html">Image Converter</a></li>
+          <li><a href="pdf-convert.html">PDF Converter</a></li>
+          <li><a href="video-convert.html">Video Converter</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Compressly. All rights reserved.</span>
+      <span>🔒 Your files never leave your device</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  function toggleFaq(btn) {
+    const item = btn.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+</script>
+</body>
+</html>

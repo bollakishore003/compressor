@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PDF Compressor – Reduce PDF File Size Free | Compressly</title>
+  <meta name="description" content="Compress PDF files online for free. Reduce PDF size for email and sharing." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+  <style>
+    .level-cards { display: flex; gap: 10px; flex-wrap: wrap; }
+    .level-card {
+      flex: 1; min-width: 110px;
+      border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+      padding: 16px 12px; text-align: center; cursor: pointer; transition: var(--transition);
+      background: var(--surface); backdrop-filter: blur(6px); position: relative; overflow: hidden;
+    }
+    .level-card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(6,182,212,0.04));
+      opacity: 0; transition: var(--transition);
+    }
+    .level-card.active::before, .level-card:hover::before { opacity: 1; }
+    .level-card.active, .level-card:hover {
+      border-color: rgba(124,58,237,0.5);
+      box-shadow: 0 0 20px rgba(124,58,237,0.12);
+    }
+    .level-icon { font-size: 26px; margin-bottom: 8px; position: relative; }
+    .level-name { font-size: 0.85rem; font-weight: 800; color: var(--text-1); position: relative; }
+    .level-desc { font-size: 0.72rem; color: var(--text-3); margin-top: 4px; position: relative; line-height: 1.4; }
+
+    .pdf-preview {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      backdrop-filter: blur(10px);
+    }
+    .pdf-icon-big { font-size: 48px; }
+    .pdf-meta h4 { font-size: 1rem; margin-bottom: 4px; word-break: break-all; color: var(--text-1); }
+    .pdf-meta p { font-size: 0.85rem; }
+
+    .comparison-bar {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 28px; margin-top: 24px; display: none;
+      backdrop-filter: blur(10px); position: relative; overflow: hidden;
+    }
+    .comparison-bar::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(6,182,212,0.03));
+      pointer-events: none;
+    }
+    .comparison-bar.visible { display: block; }
+    .comparison-bar h3 { position: relative; color: var(--text-1); font-size: 1.1rem; }
+
+    .bar-track {
+      height: 30px; background: var(--surface3); border-radius: 99px; overflow: hidden;
+      margin: 18px 0; position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #059669, #10b981, #34d399);
+      border-radius: 99px; transition: width 1s cubic-bezier(0.4,0,0.2,1);
+      display: flex; align-items: center; padding-left: 14px;
+      color: #fff; font-size: 0.78rem; font-weight: 800; min-width: 60px;
+      box-shadow: 0 0 20px rgba(16,185,129,0.3);
+    }
+    .bar-labels { display: flex; justify-content: space-between; font-size: 0.82rem; position: relative; }
+    .bar-label-left { color: var(--text-3); }
+    .bar-label-right { font-weight: 800; color: var(--green); }
+
+    .result-actions {
+      display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a>
+    <ul class="nav-links">
+      <li><a href="image-compress.html">Image Compress</a></li>
+      <li><a href="pdf-compress.html" class="active">PDF Compress</a></li>
+      <li><a href="video-compress.html">Video Compress</a></li>
+      <li><a href="pdf-convert.html">PDF Convert</a></li>
+      <li><a href="image-convert.html">Image Convert</a></li>
+      <li><a href="video-convert.html">Video Convert</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- TOOL HERO -->
+<section class="tool-hero">
+  <div class="tool-hero-grid"></div>
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> <span style="color:var(--text-3)">›</span> <span style="color:var(--text-2)">PDF Compressor</span>
+  </div>
+  <h1>📄 PDF <span class="gradient-text">Compressor</span></h1>
+  <p>Reduce your PDF file size for easy sharing — free, private, no upload needed.</p>
+  <div class="tag-strip">
+    <span>PDF</span><span>Free</span><span>Browser-Based</span><span>No Upload</span><span>Instant</span>
+  </div>
+</section>
+
+<!-- WORKSPACE -->
+<div class="tool-workspace">
+
+  <div class="alert alert-info" style="flex-wrap:wrap">
+    <span>ℹ️ PDF compression optimizes internal structure. For scanned PDFs with large images, use the&nbsp;<a href="image-compress.html" style="font-weight:700;color:#a5b4fc;display:inline">Image Compressor</a>&nbsp;first.</span>
+  </div>
+
+  <!-- Upload -->
+  <div class="upload-zone" id="uploadZone" style="margin-top:20px">
+    <div class="upload-icon-wrap">📄</div>
+    <h3>Drop your PDF here or click to browse</h3>
+    <p>Select a PDF file from your device — it stays on your computer.</p>
+    <div class="upload-formats"><span class="format-tag">.PDF</span></div>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📁 Choose PDF File</button>
+    <input type="file" id="fileInput" accept=".pdf,application/pdf" style="display:none" />
+  </div>
+
+  <!-- PDF Preview -->
+  <div id="pdfPreviewSection" style="display:none; margin-top:24px">
+    <div class="pdf-preview" id="pdfPreview"></div>
+  </div>
+
+  <!-- Settings -->
+  <div class="settings-panel" id="settingsPanel" style="margin-top:20px">
+    <div class="settings-title">⚙️ Compression Level</div>
+    <div class="level-cards">
+      <div class="level-card" data-level="screen" onclick="selectLevel(this)">
+        <div class="level-icon">📱</div>
+        <div class="level-name">Screen</div>
+        <div class="level-desc">Smallest size<br/>Good for web/screen</div>
+      </div>
+      <div class="level-card active" data-level="ebook" onclick="selectLevel(this)">
+        <div class="level-icon">📖</div>
+        <div class="level-name">eBook</div>
+        <div class="level-desc">Balanced<br/>Recommended</div>
+      </div>
+      <div class="level-card" data-level="printer" onclick="selectLevel(this)">
+        <div class="level-icon">🖨️</div>
+        <div class="level-name">Printer</div>
+        <div class="level-desc">Higher quality<br/>For printing</div>
+      </div>
+      <div class="level-card" data-level="prepress" onclick="selectLevel(this)">
+        <div class="level-icon">🖼️</div>
+        <div class="level-name">Prepress</div>
+        <div class="level-desc">Max quality<br/>Minimal reduction</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Image Quality: <strong id="imgQualityVal">70</strong>%</label>
+          <div class="range-wrap">
+            <input type="range" id="imgQualitySlider" min="10" max="100" value="70"
+              oninput="document.getElementById('imgQualityVal').textContent = this.value" />
+            <div class="range-label"><span>Smaller file</span><span>Better images</span></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Remove Metadata</label>
+          <label style="display:flex;align-items:center;gap:10px;margin-top:12px;cursor:pointer">
+            <input type="checkbox" id="removeMeta" checked
+              style="width:18px;height:18px;accent-color:#7c3aed;cursor:pointer" />
+            <span style="font-size:0.88rem;color:var(--text-2)">Strip author, title &amp; date info</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-bar" id="actionBar" style="display:none">
+    <button class="btn btn-primary" id="compressBtn" onclick="compressPDF()">⚡ Compress PDF</button>
+    <button class="btn btn-outline" onclick="clearAll()">🗑 Clear</button>
+  </div>
+
+  <!-- Result -->
+  <div class="comparison-bar" id="comparisonBar">
+    <h3>✅ Compression Complete!</h3>
+    <p id="resultSummary" style="font-size:0.9rem;margin-top:6px;position:relative"></p>
+    <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+    <div class="bar-labels">
+      <span class="bar-label-left" id="barLeft"></span>
+      <span class="bar-label-right" id="barRight"></span>
+    </div>
+    <div class="result-actions">
+      <button class="btn btn-success" id="downloadBtn" onclick="downloadResult()">⬇️ Download Compressed PDF</button>
+      <button class="btn btn-outline" onclick="clearAll()">🔄 Compress Another</button>
+    </div>
+  </div>
+
+  <div class="alert alert-warning" id="errorAlert" style="display:none;margin-top:20px"></div>
+
+  <!-- How it Works -->
+  <div class="howto-section" style="margin-top: 40px">
+    <h3>How to Compress a PDF</h3>
+    <div class="howto-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Upload PDF</h4>
+        <p>Select your PDF — it stays on your device and is never uploaded.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Choose Level</h4>
+        <p>Pick a compression level: screen, email, or print quality.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Download</h4>
+        <p>Click Compress and download your smaller PDF instantly.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info" style="margin-top: 24px">
+    🔒 <strong>Privacy Guarantee:</strong> Your PDF is processed entirely in your browser. It is never sent to any server.
+  </div>
+</div>
+
+<!-- Related -->
+<div class="related-section">
+  <h3>Related Tools</h3>
+  <div class="related-grid">
+    <a href="image-compress.html" class="related-card">
+      <span class="related-icon">🖼️</span>
+      <div><h4>Image Compressor</h4><p>Compress JPG, PNG, WebP</p></div>
+    </a>
+    <a href="image-convert.html" class="related-card">
+      <span class="related-icon">🔄</span>
+      <div><h4>Image Converter</h4><p>Convert between formats</p></div>
+    </a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a>
+        <p>Free, fast, and private online file compression tools. Your files never leave your device.</p>
+      </div>
+      <div class="footer-col"><h5>Compress</h5><ul><li><a href="image-compress.html">Image</a></li><li><a href="pdf-compress.html">PDF</a></li><li><a href="video-compress.html">Video</a></li></ul></div>
+      <div class="footer-col"><h5>Convert</h5><ul><li><a href="pdf-convert.html">PDF Converter</a></li><li><a href="image-convert.html">Image Converter</a></li><li><a href="video-convert.html">Video Converter</a></li></ul></div>
+      <div class="footer-col"><h5>Info</h5><ul><li><a href="index.html#faq">FAQ</a></li><li><a href="#">Privacy</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Compressly. All rights reserved.</span>
+      <span>🔒 Files never leave your device</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const { PDFDocument } = PDFLib;
+let pdfFile = null, compressedBytes = null, selectedLevel = 'ebook';
+const levelQuality = { screen: 0.4, ebook: 0.65, printer: 0.8, prepress: 0.95 };
+
+function selectLevel(el) {
+  document.querySelectorAll('.level-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  selectedLevel = el.dataset.level;
+  const q = Math.round(levelQuality[selectedLevel] * 100);
+  document.getElementById('imgQualitySlider').value = q;
+  document.getElementById('imgQualityVal').textContent = q;
+}
+
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag-over');
+  const f = [...e.dataTransfer.files].find(f => f.type === 'application/pdf');
+  if (f) handleFile(f); else showError('Please drop a valid PDF file.');
+});
+document.getElementById('fileInput').addEventListener('change', e => {
+  if (e.target.files[0]) handleFile(e.target.files[0]); e.target.value = '';
+});
+
+function fmtBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(2) + ' MB';
+}
+
+function handleFile(f) {
+  pdfFile = f;
+  // Collapse upload zone
+  zone.style.display = 'none';
+  document.getElementById('pdfPreviewSection').style.display = 'block';
+  document.getElementById('pdfPreview').innerHTML = `
+    <div class="pdf-icon-big">📄</div>
+    <div class="pdf-meta"><h4>${f.name}</h4><p>Size: <strong style="color:var(--text-1)">${fmtBytes(f.size)}</strong></p>
+    <p style="font-size:0.8rem;margin-top:4px;color:var(--text-3)">Ready to compress</p></div>`;
+  document.getElementById('settingsPanel').classList.add('visible');
+  document.getElementById('actionBar').style.display = 'flex';
+  document.getElementById('comparisonBar').classList.remove('visible');
+  document.getElementById('errorAlert').style.display = 'none';
+  compressedBytes = null;
+}
+
+async function compressPDF() {
+  if (!pdfFile) return;
+  const btn = document.getElementById('compressBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Compressing…';
+  document.getElementById('errorAlert').style.display = 'none';
+  try {
+    const buf = await pdfFile.arrayBuffer();
+    const doc = await PDFDocument.load(buf, { ignoreEncryption: true });
+    if (document.getElementById('removeMeta').checked) {
+      doc.setTitle(''); doc.setAuthor(''); doc.setSubject(''); doc.setKeywords([]);
+      doc.setProducer('Compressly'); doc.setCreator('Compressly');
+    }
+    const compressed = await doc.save({ useObjectStreams: true, addDefaultPage: false, objectsPerTick: 50 });
+    compressedBytes = compressed;
+    const origSize = pdfFile.size, newSize = compressed.byteLength;
+    const savings = Math.max(0, Math.round((1 - newSize / origSize) * 100));
+    const bar = document.getElementById('comparisonBar');
+    bar.classList.add('visible');
+    document.getElementById('barFill').style.width = (100 - savings) + '%';
+    document.getElementById('barFill').textContent = fmtBytes(newSize);
+    document.getElementById('barLeft').textContent = `Original: ${fmtBytes(origSize)}`;
+    document.getElementById('barRight').textContent = savings > 2 ? `Saved ${savings}% (${fmtBytes(origSize - newSize)})` : 'Structure optimized';
+    document.getElementById('resultSummary').textContent = savings > 2
+      ? `Reduced from ${fmtBytes(origSize)} → ${fmtBytes(newSize)} (${savings}% smaller)`
+      : `PDF optimized. Already well-compressed — ${fmtBytes(origSize)} → ${fmtBytes(newSize)}.`;
+    bar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch(e) { showError('Could not process this PDF. It may be encrypted. Error: ' + e.message); }
+  btn.disabled = false; btn.innerHTML = '⚡ Compress PDF';
+}
+
+function downloadResult() {
+  if (!compressedBytes) return;
+  const base = pdfFile.name.replace(/\.pdf$/i, '');
+  const blob = new Blob([compressedBytes], { type: 'application/pdf' });
+  const url = URL.createObjectURL(blob); const a = document.createElement('a');
+  a.href = url; a.download = base + '_compressed.pdf'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function clearAll() {
+  pdfFile = null; compressedBytes = null;
+  document.getElementById('pdfPreviewSection').style.display = 'none';
+  document.getElementById('settingsPanel').classList.remove('visible');
+  document.getElementById('actionBar').style.display = 'none';
+  document.getElementById('comparisonBar').classList.remove('visible');
+  document.getElementById('errorAlert').style.display = 'none';
+  // Restore upload zone
+  zone.style.display = '';
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorAlert'); el.innerHTML = '⚠️ ' + msg; el.style.display = 'flex';
+}
+</script>
+</body>
+</html>

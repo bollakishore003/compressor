@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Compressor – Compress JPG, PNG, WebP | Compressly</title>
+  <meta name="description" content="Compress JPG, PNG, and WebP images for free. Reduce file size by up to 90% without losing quality." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <style>
+    .output-format-group { display: flex; gap: 8px; flex-wrap: wrap; }
+    .fmt-btn {
+      padding: 8px 18px; border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--surface); font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: var(--transition); color: var(--text-2); font-family: inherit;
+      backdrop-filter: blur(6px);
+    }
+    .fmt-btn.active, .fmt-btn:hover {
+      background: rgba(124,58,237,0.25); color: #c4b5fd;
+      border-color: rgba(124,58,237,0.5);
+      box-shadow: 0 0 16px rgba(124,58,237,0.15);
+    }
+    .compress-summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-top: 24px;
+      display: none;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .compress-summary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(6,182,212,0.04));
+      pointer-events: none;
+    }
+    .compress-summary.visible { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; }
+    .summary-stat { text-align: center; position: relative; }
+    .summary-stat .val {
+      font-size: 1.4rem; font-weight: 900;
+      background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .summary-stat .lbl { font-size: 0.78rem; color: var(--text-3); font-weight: 500; margin-top: 2px; }
+    .summary-arrow { font-size: 1.5rem; color: var(--text-3); position: relative; }
+    .saved-chip {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: #fff; border-radius: 100px;
+      padding: 8px 20px; font-size: 0.88rem; font-weight: 800;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">🗜️</div>
+      <span class="logo-text">Compressly</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="image-compress.html" class="active">Image Compress</a></li>
+      <li><a href="pdf-compress.html">PDF Compress</a></li>
+      <li><a href="video-compress.html">Video Compress</a></li>
+      <li><a href="pdf-convert.html">PDF Convert</a></li>
+      <li><a href="image-convert.html">Image Convert</a></li>
+      <li><a href="video-convert.html">Video Convert</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- TOOL HERO -->
+<section class="tool-hero">
+  <div class="tool-hero-grid"></div>
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> <span style="color:var(--text-3)">›</span> <span style="color:var(--text-2)">Image Compressor</span>
+  </div>
+  <h1>🖼️ Image <span class="gradient-text">Compressor</span></h1>
+  <p>Reduce JPG, PNG &amp; WebP file sizes by up to 90% — free, instant, and 100% private.</p>
+  <div class="tag-strip">
+    <span>JPG / JPEG</span><span>PNG</span><span>WebP</span><span>GIF</span><span>BMP</span>
+    <span>Batch Processing</span><span>No Upload</span>
+  </div>
+</section>
+
+<!-- WORKSPACE -->
+<div class="tool-workspace">
+
+  <!-- Upload Zone -->
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon-wrap">🖼️</div>
+    <h3>Drop images here or click to browse</h3>
+    <p>Supports JPG, PNG, WebP, GIF, BMP — up to 50 files at once</p>
+    <div class="upload-formats">
+      <span class="format-tag">JPG</span>
+      <span class="format-tag">PNG</span>
+      <span class="format-tag">WebP</span>
+      <span class="format-tag">GIF</span>
+      <span class="format-tag">BMP</span>
+    </div>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📁 Choose Files</button>
+    <input type="file" id="fileInput" accept="image/*" multiple style="display:none" />
+  </div>
+
+  <!-- Compact add-more bar (hidden initially) -->
+  <div class="add-more-bar" id="addMoreBar" style="display:none">
+    <span>📎 Want to add more images?</span>
+    <button class="btn btn-outline" onclick="document.getElementById('fileInput').click()" style="padding:7px 18px;font-size:0.82rem">+ Add More Files</button>
+  </div>
+
+  <!-- Settings -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-title">⚙️ Compression Settings</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Quality: <strong id="qualityVal">80</strong>%</label>
+        <div class="range-wrap">
+          <input type="range" id="qualitySlider" min="10" max="100" value="80"
+            oninput="document.getElementById('qualityVal').textContent = this.value" />
+          <div class="range-label"><span>Smallest</span><span>Best Quality</span></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Output Format</label>
+        <div class="output-format-group">
+          <button class="fmt-btn active" data-fmt="same" onclick="selectFmt(this)">Same as input</button>
+          <button class="fmt-btn" data-fmt="image/jpeg" onclick="selectFmt(this)">JPG</button>
+          <button class="fmt-btn" data-fmt="image/png" onclick="selectFmt(this)">PNG</button>
+          <button class="fmt-btn" data-fmt="image/webp" onclick="selectFmt(this)">WebP</button>
+        </div>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Max Width (px) — 0 = original</label>
+        <input type="number" class="form-control" id="maxWidth" value="0" min="0" placeholder="e.g. 1920" />
+      </div>
+      <div class="form-group">
+        <label>Max Height (px) — 0 = original</label>
+        <input type="number" class="form-control" id="maxHeight" value="0" min="0" placeholder="e.g. 1080" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="compress-summary" id="compressSummary"></div>
+
+  <!-- File Cards -->
+  <div class="files-section" id="filesSection" style="display:none">
+    <div class="files-header">
+      <h3 id="fileCount">0 Files</h3>
+      <button class="btn btn-outline" onclick="clearAll()" style="padding:7px 16px;font-size:0.82rem">🗑 Clear All</button>
+    </div>
+    <div class="file-cards" id="fileCards"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-bar" id="actionBar" style="display:none">
+    <button class="btn btn-primary" id="compressBtn" onclick="compressAll()">⚡ Compress All</button>
+    <button class="btn btn-success" id="downloadAllBtn" onclick="downloadAll()" style="display:none">⬇️ Download All (ZIP)</button>
+    <button class="btn btn-outline" onclick="clearAll()">🗑 Clear All</button>
+  </div>
+
+  <!-- How it Works -->
+  <div class="howto-section" style="margin-top: 40px">
+    <h3>How to Compress Images</h3>
+    <div class="howto-steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h4>Upload Images</h4>
+        <p>Drag &amp; drop or click to select one or more images from your device.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h4>Adjust Settings</h4>
+        <p>Set the quality level and output format to match your needs.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h4>Download</h4>
+        <p>Click Compress, preview results, then download individually or as a ZIP.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Related -->
+<div class="related-section">
+  <h3>Related Tools</h3>
+  <div class="related-grid">
+    <a href="pdf-compress.html" class="related-card">
+      <span class="related-icon">📄</span>
+      <div><h4>PDF Compressor</h4><p>Shrink PDF file sizes</p></div>
+    </a>
+    <a href="image-convert.html" class="related-card">
+      <span class="related-icon">🔄</span>
+      <div><h4>Image Converter</h4><p>Convert between formats</p></div>
+    </a>
+    <a href="image-convert.html" class="related-card">
+      <span class="related-icon">⚡</span>
+      <div><h4>Convert to WebP</h4><p>Next-gen web format</p></div>
+    </a>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a>
+        <p>Free, fast, and private online file compression tools. Your files never leave your device.</p>
+      </div>
+      <div class="footer-col"><h5>Compress</h5><ul><li><a href="image-compress.html">Image</a></li><li><a href="pdf-compress.html">PDF</a></li><li><a href="video-compress.html">Video</a></li></ul></div>
+      <div class="footer-col"><h5>Convert</h5><ul><li><a href="pdf-convert.html">PDF Converter</a></li><li><a href="image-convert.html">Image Converter</a></li><li><a href="video-convert.html">Video Converter</a></li></ul></div>
+      <div class="footer-col"><h5>Info</h5><ul><li><a href="index.html#faq">FAQ</a></li><li><a href="#">Privacy</a></li></ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2024 Compressly. All rights reserved.</span>
+      <span>🔒 Files never leave your device</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+let files = [];
+let outputFormat = 'same';
+let compressedBlobs = {};
+
+function selectFmt(btn) {
+  document.querySelectorAll('.fmt-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  outputFormat = btn.dataset.fmt;
+}
+
+const zone = document.getElementById('uploadZone');
+const addMoreBar = document.getElementById('addMoreBar');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag-over');
+  handleFiles([...e.dataTransfer.files].filter(f => f.type.startsWith('image/')));
+});
+document.getElementById('fileInput').addEventListener('change', e => {
+  handleFiles([...e.target.files]); e.target.value = '';
+});
+
+function handleFiles(newFiles) {
+  if (!newFiles.length) return;
+  newFiles.forEach(f => files.push({ file: f, id: Date.now() + Math.random() }));
+  renderCards();
+  // Collapse upload zone, show compact add-more bar
+  zone.style.display = 'none';
+  addMoreBar.style.display = 'flex';
+  document.getElementById('settingsPanel').classList.add('visible');
+  document.getElementById('filesSection').style.display = 'block';
+  document.getElementById('actionBar').style.display = 'flex';
+  document.getElementById('downloadAllBtn').style.display = 'none';
+  document.getElementById('compressSummary').classList.remove('visible');
+}
+
+function fmtBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(2) + ' MB';
+}
+
+function renderCards() {
+  const c = document.getElementById('fileCards');
+  document.getElementById('fileCount').textContent = files.length + ' File' + (files.length !== 1 ? 's' : '');
+  c.innerHTML = '';
+  files.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'file-card'; card.id = 'card-' + item.id;
+    const url = URL.createObjectURL(item.file);
+    card.innerHTML = `
+      <div class="file-thumb"><img src="${url}" alt="" onload="URL.revokeObjectURL(this.src)" /></div>
+      <div class="file-info">
+        <div class="file-name" title="${item.file.name}">${item.file.name}</div>
+        <div class="file-sizes">
+          <span>${fmtBytes(item.file.size)}</span>
+          <span class="size-arrow" id="arrow-${item.id}" style="display:none">→</span>
+          <span class="size-new" id="newSize-${item.id}"></span>
+          <span class="savings-badge" id="badge-${item.id}" style="display:none"></span>
+        </div>
+        <div class="progress-wrap" id="prog-wrap-${item.id}" style="display:none"><div class="progress-bar" id="prog-${item.id}" style="width:0%"></div></div>
+      </div>
+      <div class="file-actions">
+        <button class="btn-icon" id="dl-${item.id}" style="display:none" title="Download" onclick="downloadSingle('${item.id}','${item.file.name}')">⬇️</button>
+        <button class="btn-icon" title="Remove" onclick="removeFile('${item.id}')">✕</button>
+      </div>`;
+    c.appendChild(card);
+  });
+}
+
+function removeFile(id) {
+  files = files.filter(f => String(f.id) !== String(id));
+  delete compressedBlobs[id];
+  const card = document.getElementById('card-' + id); if (card) card.remove();
+  document.getElementById('fileCount').textContent = files.length + ' File' + (files.length !== 1 ? 's' : '');
+  if (!files.length) clearAll();
+}
+
+function clearAll() {
+  files = []; compressedBlobs = {};
+  document.getElementById('fileCards').innerHTML = '';
+  document.getElementById('filesSection').style.display = 'none';
+  document.getElementById('actionBar').style.display = 'none';
+  document.getElementById('settingsPanel').classList.remove('visible');
+  zone.style.display = '';
+  addMoreBar.style.display = 'none';
+  document.getElementById('compressSummary').classList.remove('visible');
+  document.getElementById('downloadAllBtn').style.display = 'none';
+}
+
+async function compressAll() {
+  const btn = document.getElementById('compressBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Compressing…';
+  compressedBlobs = {};
+  const quality = parseInt(document.getElementById('qualitySlider').value) / 100;
+  const maxW = parseInt(document.getElementById('maxWidth').value) || undefined;
+  const maxH = parseInt(document.getElementById('maxHeight').value) || undefined;
+  let totalOrig = 0, totalComp = 0;
+
+  for (const item of files) {
+    const id = String(item.id);
+    const pw = document.getElementById('prog-wrap-' + id);
+    const pb = document.getElementById('prog-' + id);
+    pw.style.display = 'block'; pb.style.width = '10%';
+    try {
+      const fmt = outputFormat === 'same' ? item.file.type : outputFormat;
+      const opts = { maxSizeMB: 999, maxWidthOrHeight: Math.max(maxW||999999, maxH||999999), useWebWorker: true, fileType: fmt, initialQuality: quality, onProgress: p => pb.style.width = p+'%' };
+      if (maxW) opts.maxWidthOrHeight = maxW;
+      const compressed = await imageCompression(item.file, opts);
+      compressedBlobs[id] = { blob: compressed, type: fmt, name: item.file.name };
+      pb.style.width = '100%'; totalOrig += item.file.size; totalComp += compressed.size;
+      const savings = Math.round((1 - compressed.size / item.file.size) * 100);
+      document.getElementById('newSize-' + id).textContent = fmtBytes(compressed.size);
+      document.getElementById('arrow-' + id).style.display = 'inline';
+      const badge = document.getElementById('badge-' + id); badge.textContent = '−' + savings + '%'; badge.style.display = savings > 0 ? 'inline' : 'none';
+      document.getElementById('dl-' + id).style.display = 'flex';
+    } catch(e) { pb.style.width = '100%'; pb.style.background = 'var(--red)'; document.getElementById('newSize-' + id).textContent = 'Error'; }
+  }
+
+  if (totalOrig > 0) {
+    const saved = Math.round((1 - totalComp / totalOrig) * 100);
+    const s = document.getElementById('compressSummary');
+    s.innerHTML = `
+      <div class="summary-stat"><div class="val">${fmtBytes(totalOrig)}</div><div class="lbl">Original</div></div>
+      <div class="summary-arrow">→</div>
+      <div class="summary-stat"><div class="val">${fmtBytes(totalComp)}</div><div class="lbl">Compressed</div></div>
+      <div class="saved-chip">✅ Saved ${saved}% (${fmtBytes(totalOrig - totalComp)})</div>`;
+    s.classList.add('visible');
+  }
+  btn.disabled = false; btn.innerHTML = '⚡ Compress All';
+  document.getElementById('downloadAllBtn').style.display = Object.keys(compressedBlobs).length > 1 ? 'flex' : 'none';
+}
+
+function downloadSingle(id, name) {
+  const e = compressedBlobs[id]; if (!e) return;
+  const ext = {'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp'}[e.type]||'';
+  const base = name.replace(/\.[^.]+$/,'');
+  const url = URL.createObjectURL(e.blob); const a = document.createElement('a');
+  a.href = url; a.download = base + '_compressed' + ext; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function downloadAll() {
+  const btn = document.getElementById('downloadAllBtn'); btn.innerHTML = '<span class="spinner"></span> Zipping…'; btn.disabled = true;
+  const zip = new JSZip(); const folder = zip.folder('compressly_images');
+  for (const [id, e] of Object.entries(compressedBlobs)) {
+    const ext = {'image/jpeg':'.jpg','image/png':'.png','image/webp':'.webp'}[e.type]||'';
+    folder.file(e.name.replace(/\.[^.]+$/,'') + '_compressed' + ext, e.blob);
+  }
+  const content = await zip.generateAsync({type:'blob'});
+  const url = URL.createObjectURL(content); const a = document.createElement('a');
+  a.href = url; a.download = 'compressly_images.zip'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+  btn.innerHTML = '⬇️ Download All (ZIP)'; btn.disabled = false;
+}
+</script>
+</body>
+</html>

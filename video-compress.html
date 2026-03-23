@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Compressor – Reduce MP4, WebM Size Free | Compressly</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .video-preview-wrap {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; margin-top: 20px; backdrop-filter: blur(10px);
+    }
+    .video-el {
+      width: 100%; max-height: 360px; border-radius: var(--radius-xs);
+      background: #000; display: block; margin-bottom: 16px;
+    }
+    .vid-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+    .vid-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .vid-meta-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); }
+    .vid-meta-val { font-size: 0.95rem; font-weight: 700; color: var(--text-1); }
+
+    .res-cards { display: flex; gap: 8px; flex-wrap: wrap; }
+    .res-card {
+      padding: 10px 18px; border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--surface); font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: var(--transition); color: var(--text-2); font-family: inherit;
+      text-align: center; min-width: 80px;
+    }
+    .res-card.active, .res-card:hover {
+      background: rgba(124,58,237,0.25); color: #c4b5fd;
+      border-color: rgba(124,58,237,0.5);
+    }
+    .res-card .res-label { font-size: 0.72rem; color: var(--text-3); margin-top: 2px; }
+    .res-card.active .res-label { color: rgba(196,181,253,0.6); }
+
+    .progress-big {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px; margin-top: 20px;
+      text-align: center; display: none; backdrop-filter: blur(10px);
+    }
+    .progress-big.visible { display: block; }
+    .prog-circle {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: conic-gradient(var(--p1) var(--prog, 0%), var(--surface3) 0%);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px; position: relative;
+    }
+    .prog-circle-inner {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--bg2); display: flex; align-items: center;
+      justify-content: center; font-size: 1.1rem; font-weight: 900; color: var(--text-1);
+    }
+    .prog-label { font-size: 0.9rem; color: var(--text-2); }
+
+    .result-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px; margin-top: 20px;
+      display: none; backdrop-filter: blur(10px); position: relative; overflow: hidden;
+    }
+    .result-box::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(6,182,212,0.03));
+      pointer-events: none;
+    }
+    .result-box.visible { display: block; }
+    .result-stats { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; position: relative; margin-top: 12px; }
+    .r-stat { text-align: center; }
+    .r-stat .v { font-size: 1.3rem; font-weight: 900; background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .r-stat .l { font-size: 0.75rem; color: var(--text-3); margin-top: 2px; }
+    .r-arrow { font-size: 1.3rem; color: var(--text-3); position: relative; }
+    .r-chip {
+      background: linear-gradient(135deg, #059669, #10b981); color: #fff;
+      border-radius: 100px; padding: 8px 18px; font-size: 0.85rem; font-weight: 800;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.3); position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a>
+    <ul class="nav-links">
+      <li><a href="image-compress.html">Image Compress</a></li>
+      <li><a href="pdf-compress.html">PDF Compress</a></li>
+      <li><a href="video-compress.html" class="active">Video Compress</a></li>
+      <li><a href="pdf-convert.html">PDF Convert</a></li>
+      <li><a href="image-convert.html">Image Convert</a></li>
+      <li><a href="video-convert.html">Video Convert</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="tool-hero">
+  <div class="tool-hero-grid"></div>
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> <span style="color:var(--text-3)">›</span> <span style="color:var(--text-2)">Video Compressor</span>
+  </div>
+  <h1>🎬 Video <span class="gradient-text">Compressor</span></h1>
+  <p>Reduce video file sizes directly in your browser — free, private, no upload required.</p>
+  <div class="tag-strip">
+    <span>MP4</span><span>WebM</span><span>MOV</span><span>AVI</span><span>Free</span><span>No Upload</span>
+  </div>
+</section>
+
+<div class="tool-workspace">
+
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon-wrap">🎬</div>
+    <h3>Select a video file</h3>
+    <p>Supports MP4, WebM, MOV, AVI, and most common video formats</p>
+    <div class="upload-formats">
+      <span class="format-tag">MP4</span><span class="format-tag">WebM</span>
+      <span class="format-tag">MOV</span><span class="format-tag">AVI</span>
+    </div>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📁 Choose Video</button>
+    <input type="file" id="fileInput" accept="video/*" style="display:none" />
+  </div>
+
+  <!-- Video Preview -->
+  <div class="video-preview-wrap" id="videoPreview" style="display:none">
+    <video class="video-el" id="videoEl" controls></video>
+    <div class="vid-meta" id="vidMeta"></div>
+  </div>
+
+  <!-- Settings -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-title">⚙️ Compression Settings</div>
+
+    <div class="form-group" style="margin-bottom:20px">
+      <label>Target Resolution</label>
+      <div class="res-cards" id="resCards">
+        <button class="res-card active" data-h="0" onclick="selectRes(this)">Original<div class="res-label">Keep size</div></button>
+        <button class="res-card" data-h="1080" onclick="selectRes(this)">1080p<div class="res-label">Full HD</div></button>
+        <button class="res-card" data-h="720" onclick="selectRes(this)">720p<div class="res-label">HD</div></button>
+        <button class="res-card" data-h="480" onclick="selectRes(this)">480p<div class="res-label">SD</div></button>
+        <button class="res-card" data-h="360" onclick="selectRes(this)">360p<div class="res-label">Low</div></button>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Video Bitrate: <strong id="brVal">2.5</strong> Mbps</label>
+        <div class="range-wrap">
+          <input type="range" id="brSlider" min="500" max="8000" value="2500" step="100"
+            oninput="document.getElementById('brVal').textContent = (this.value/1000).toFixed(1)" />
+          <div class="range-label"><span>Smaller file</span><span>Better quality</span></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Audio Bitrate</label>
+        <select class="form-control" id="audioBr">
+          <option value="128000">128 kbps (Standard)</option>
+          <option value="96000">96 kbps (Compact)</option>
+          <option value="64000">64 kbps (Minimum)</option>
+          <option value="0">Remove audio</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-bar" id="actionBar" style="display:none">
+    <button class="btn btn-primary" id="compressBtn" onclick="compressVideo()">⚡ Compress Video</button>
+    <button class="btn btn-outline" onclick="clearAll()">🗑 Clear</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-big" id="progressPanel">
+    <div class="prog-circle" id="progCircle">
+      <div class="prog-circle-inner" id="progText">0%</div>
+    </div>
+    <div class="prog-label" id="progLabel">Compressing video…</div>
+    <p style="font-size:0.78rem;color:var(--text-3);margin-top:8px">Processing happens in your browser. Larger videos take more time.</p>
+  </div>
+
+  <!-- Result -->
+  <div class="result-box" id="resultBox">
+    <h3 style="position:relative;color:var(--text-1)">✅ Compression Complete!</h3>
+    <div class="result-stats" id="resultStats"></div>
+    <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;position:relative">
+      <button class="btn btn-success" id="downloadBtn" onclick="downloadResult()">⬇️ Download Compressed Video</button>
+      <button class="btn btn-outline" onclick="clearAll()">🔄 Compress Another</button>
+    </div>
+  </div>
+
+  <!-- How it Works -->
+  <div class="howto-section" style="margin-top: 40px">
+    <h3>How to Compress Video</h3>
+    <div class="howto-steps">
+      <div class="step"><div class="step-num">1</div><h4>Upload Video</h4><p>Select a video file from your device.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Adjust Settings</h4><p>Choose resolution, bitrate, and audio quality.</p></div>
+      <div class="step"><div class="step-num">3</div><h4>Download</h4><p>Click Compress and download the smaller file.</p></div>
+    </div>
+  </div>
+
+  <div class="alert alert-info" style="margin-top:24px">
+    <span>🔒 <strong>Privacy:</strong> Video processing uses your browser's built-in MediaRecorder API. No data leaves your device.</span>
+  </div>
+</div>
+
+<div class="related-section">
+  <h3>Related Tools</h3>
+  <div class="related-grid">
+    <a href="video-convert.html" class="related-card"><span class="related-icon">🔄</span><div><h4>Video Converter</h4><p>Convert video formats</p></div></a>
+    <a href="image-compress.html" class="related-card"><span class="related-icon">🖼️</span><div><h4>Image Compressor</h4><p>Compress images</p></div></a>
+    <a href="pdf-compress.html" class="related-card"><span class="related-icon">📄</span><div><h4>PDF Compressor</h4><p>Shrink PDFs</p></div></a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand"><a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a><p>Free, fast, and private online file compression and conversion tools.</p></div>
+      <div class="footer-col"><h5>Compress</h5><ul><li><a href="image-compress.html">Image</a></li><li><a href="pdf-compress.html">PDF</a></li><li><a href="video-compress.html">Video</a></li></ul></div>
+      <div class="footer-col"><h5>Convert</h5><ul><li><a href="pdf-convert.html">PDF Converter</a></li><li><a href="image-convert.html">Image Converter</a></li><li><a href="video-convert.html">Video Converter</a></li></ul></div>
+      <div class="footer-col"><h5>Info</h5><ul><li><a href="index.html#faq">FAQ</a></li><li><a href="#">Privacy</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2024 Compressly.</span><span>🔒 Files never leave your device</span></div>
+  </div>
+</footer>
+
+<script>
+let videoFile = null, resultBlob = null, targetH = 0;
+
+function fmtBytes(b) { return b < 1024 ? b+' B' : b < 1048576 ? (b/1024).toFixed(1)+' KB' : (b/1048576).toFixed(2)+' MB'; }
+function fmtDuration(s) { const m = Math.floor(s/60); return m + ':' + String(Math.floor(s%60)).padStart(2,'0'); }
+
+function selectRes(btn) {
+  document.querySelectorAll('.res-card').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  targetH = parseInt(btn.dataset.h);
+}
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return; e.target.value = '';
+  videoFile = f; resultBlob = null;
+
+  const video = document.getElementById('videoEl');
+  const url = URL.createObjectURL(f);
+  video.src = url;
+
+  video.onloadedmetadata = () => {
+    document.getElementById('vidMeta').innerHTML = `
+      <div class="vid-meta-item"><span class="vid-meta-label">File Name</span><span class="vid-meta-val">${f.name}</span></div>
+      <div class="vid-meta-item"><span class="vid-meta-label">Size</span><span class="vid-meta-val">${fmtBytes(f.size)}</span></div>
+      <div class="vid-meta-item"><span class="vid-meta-label">Duration</span><span class="vid-meta-val">${fmtDuration(video.duration)}</span></div>
+      <div class="vid-meta-item"><span class="vid-meta-label">Resolution</span><span class="vid-meta-val">${video.videoWidth}×${video.videoHeight}</span></div>
+    `;
+  };
+
+  document.getElementById('uploadZone').style.display = 'none';
+  document.getElementById('videoPreview').style.display = 'block';
+  document.getElementById('settingsPanel').classList.add('visible');
+  document.getElementById('actionBar').style.display = 'flex';
+  document.getElementById('resultBox').classList.remove('visible');
+  document.getElementById('progressPanel').classList.remove('visible');
+});
+
+async function compressVideo() {
+  if (!videoFile) return;
+  const btn = document.getElementById('compressBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Processing…';
+
+  const video = document.getElementById('videoEl');
+  const origW = video.videoWidth, origH = video.videoHeight;
+
+  let outH = targetH || origH;
+  let outW = Math.round(origW * (outH / origH));
+  if (outW % 2 !== 0) outW++;
+  if (outH % 2 !== 0) outH++;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = outW; canvas.height = outH;
+  const ctx = canvas.getContext('2d');
+
+  const videoBr = parseInt(document.getElementById('brSlider').value) * 1000;
+  const audioBr = parseInt(document.getElementById('audioBr').value);
+
+  const progPanel = document.getElementById('progressPanel');
+  progPanel.classList.add('visible');
+
+  try {
+    // Create a stream from canvas
+    const stream = canvas.captureStream(30);
+
+    // Add audio track if exists and desired
+    if (audioBr > 0) {
+      try {
+        const audioCtx = new AudioContext();
+        const source = audioCtx.createMediaElementSource(video);
+        const dest = audioCtx.createMediaStreamDestination();
+        source.connect(dest);
+        source.connect(audioCtx.destination);
+        dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+      } catch(e) { /* no audio or not supported */ }
+    }
+
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+      ? 'video/webm;codecs=vp9' : 'video/webm;codecs=vp8';
+
+    const recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: videoBr, audioBitsPerSecond: audioBr || undefined });
+    const chunks = [];
+
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+    const done = new Promise(resolve => { recorder.onstop = () => resolve(); });
+
+    video.currentTime = 0;
+    video.muted = false;
+
+    recorder.start(100);
+
+    // Draw frames
+    const duration = video.duration;
+    video.play();
+
+    const drawFrame = () => {
+      if (video.paused || video.ended) {
+        recorder.stop();
+        return;
+      }
+      ctx.drawImage(video, 0, 0, outW, outH);
+      const pct = Math.min(99, Math.round((video.currentTime / duration) * 100));
+      document.getElementById('progCircle').style.setProperty('--prog', pct + '%');
+      document.getElementById('progText').textContent = pct + '%';
+      requestAnimationFrame(drawFrame);
+    };
+
+    requestAnimationFrame(drawFrame);
+
+    await new Promise(resolve => { video.onended = resolve; video.onpause = resolve; });
+    recorder.stop();
+    await done;
+
+    resultBlob = new Blob(chunks, { type: mimeType });
+    const savings = Math.max(0, Math.round((1 - resultBlob.size / videoFile.size) * 100));
+
+    document.getElementById('resultStats').innerHTML = `
+      <div class="r-stat"><div class="v">${fmtBytes(videoFile.size)}</div><div class="l">Original</div></div>
+      <div class="r-arrow">→</div>
+      <div class="r-stat"><div class="v">${fmtBytes(resultBlob.size)}</div><div class="l">Compressed</div></div>
+      <div class="r-chip">✅ ${savings > 0 ? 'Saved '+savings+'%' : 'Optimized'}</div>
+    `;
+
+    document.getElementById('progCircle').style.setProperty('--prog', '100%');
+    document.getElementById('progText').textContent = '100%';
+    document.getElementById('progLabel').textContent = 'Done!';
+    document.getElementById('resultBox').classList.add('visible');
+    document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  } catch(e) {
+    alert('Compression error: ' + e.message);
+  }
+
+  video.pause(); video.currentTime = 0;
+  btn.disabled = false; btn.innerHTML = '⚡ Compress Video';
+}
+
+function downloadResult() {
+  if (!resultBlob) return;
+  const name = videoFile.name.replace(/\.[^.]+$/, '') + '_compressed.webm';
+  const url = URL.createObjectURL(resultBlob);
+  const a = document.createElement('a'); a.href = url; a.download = name;
+  a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function clearAll() {
+  videoFile = null; resultBlob = null;
+  document.getElementById('videoEl').src = '';
+  document.getElementById('uploadZone').style.display = '';
+  document.getElementById('videoPreview').style.display = 'none';
+  document.getElementById('settingsPanel').classList.remove('visible');
+  document.getElementById('actionBar').style.display = 'none';
+  document.getElementById('progressPanel').classList.remove('visible');
+  document.getElementById('resultBox').classList.remove('visible');
+}
+</script>
+</body>
+</html>

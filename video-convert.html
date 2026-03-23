@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Converter – Convert MP4, WebM, MOV Free | Compressly</title>
+  <meta name="description" content="Convert video files between MP4, WebM, MOV formats directly in your browser. Free, private, no upload required." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .video-preview-wrap {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 24px; margin-top: 20px; backdrop-filter: blur(10px);
+    }
+    .video-el {
+      width: 100%; max-height: 360px; border-radius: var(--radius-xs);
+      background: #000; display: block; margin-bottom: 16px;
+    }
+    .vid-meta { display: flex; gap: 24px; flex-wrap: wrap; }
+    .vid-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .vid-meta-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-3); }
+    .vid-meta-val { font-size: 0.95rem; font-weight: 700; color: var(--text-1); }
+
+    .quick-btns { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+    .quick-btn {
+      padding: 7px 16px; border: 1.5px solid var(--border); border-radius: 100px;
+      background: var(--surface); font-size: 0.8rem; font-weight: 700; cursor: pointer;
+      transition: var(--transition); color: var(--text-2); font-family: inherit;
+      backdrop-filter: blur(6px);
+    }
+    .quick-btn:hover, .quick-btn.active {
+      background: rgba(124,58,237,0.2); color: #c4b5fd;
+      border-color: rgba(124,58,237,0.45);
+      box-shadow: 0 0 16px rgba(124,58,237,0.12);
+    }
+
+    .convert-selector {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 28px; margin-top: 24px; backdrop-filter: blur(10px);
+    }
+    .convert-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .convert-label { font-size: 0.78rem; font-weight: 800; color: var(--text-3); white-space: nowrap; text-transform: uppercase; letter-spacing: 0.5px; }
+    .convert-select {
+      flex: 1; min-width: 100px;
+      background: var(--surface2); border: 1.5px solid var(--border); border-radius: var(--radius-xs);
+      padding: 10px 14px; font-size: 0.95rem; font-weight: 700; color: var(--text-1);
+      cursor: pointer; outline: none; transition: var(--transition); font-family: inherit;
+    }
+    .convert-select:focus { border-color: var(--p1); box-shadow: 0 0 0 3px rgba(124,58,237,0.15); }
+    .convert-select option { background: var(--bg2); color: var(--text-1); }
+
+    .convert-arrow {
+      font-size: 1.5rem; flex-shrink: 0; cursor: pointer;
+      transition: var(--transition); width: 42px; height: 42px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: var(--surface2); border: 1px solid var(--border);
+    }
+    .convert-arrow:hover {
+      background: rgba(124,58,237,0.2); border-color: rgba(124,58,237,0.4);
+      transform: rotate(180deg);
+    }
+
+    .res-cards { display: flex; gap: 8px; flex-wrap: wrap; }
+    .res-card {
+      padding: 10px 18px; border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--surface); font-size: 0.85rem; font-weight: 700; cursor: pointer;
+      transition: var(--transition); color: var(--text-2); font-family: inherit;
+      text-align: center; min-width: 80px;
+    }
+    .res-card.active, .res-card:hover {
+      background: rgba(124,58,237,0.25); color: #c4b5fd;
+      border-color: rgba(124,58,237,0.5);
+    }
+    .res-card .res-label { font-size: 0.72rem; color: var(--text-3); margin-top: 2px; }
+    .res-card.active .res-label { color: rgba(196,181,253,0.6); }
+
+    .progress-big {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px; margin-top: 20px;
+      text-align: center; display: none; backdrop-filter: blur(10px);
+    }
+    .progress-big.visible { display: block; }
+    .prog-circle {
+      width: 100px; height: 100px; border-radius: 50%;
+      background: conic-gradient(var(--p1) var(--prog, 0%), var(--surface3) 0%);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px; position: relative;
+    }
+    .prog-circle-inner {
+      width: 80px; height: 80px; border-radius: 50%;
+      background: var(--bg2); display: flex; align-items: center;
+      justify-content: center; font-size: 1.1rem; font-weight: 900; color: var(--text-1);
+    }
+    .prog-label { font-size: 0.9rem; color: var(--text-2); }
+
+    .result-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 28px; margin-top: 20px;
+      display: none; backdrop-filter: blur(10px); position: relative; overflow: hidden;
+    }
+    .result-box::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(16,185,129,0.06), rgba(6,182,212,0.03));
+      pointer-events: none;
+    }
+    .result-box.visible { display: block; }
+    .result-stats { display: flex; gap: 24px; flex-wrap: wrap; align-items: center; position: relative; margin-top: 12px; }
+    .r-stat { text-align: center; }
+    .r-stat .v { font-size: 1.3rem; font-weight: 900; background: var(--grad-text); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .r-stat .l { font-size: 0.75rem; color: var(--text-3); margin-top: 2px; }
+    .r-arrow { font-size: 1.3rem; color: var(--text-3); position: relative; }
+    .r-chip {
+      background: linear-gradient(135deg, #059669, #10b981); color: #fff;
+      border-radius: 100px; padding: 8px 18px; font-size: 0.85rem; font-weight: 800;
+      box-shadow: 0 4px 16px rgba(16,185,129,0.3); position: relative;
+    }
+
+    .format-guide {
+      margin-top: 16px; display: grid; gap: 10px;
+    }
+    .format-guide-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 14px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-xs); transition: var(--transition);
+    }
+    .format-guide-item:hover { border-color: var(--border2); }
+    .format-guide-item span:first-child { font-size: 20px; flex-shrink: 0; }
+    .format-guide-item div { font-size: 0.875rem; color: var(--text-2); line-height: 1.6; }
+    .format-guide-item strong { color: var(--text-1); }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a>
+    <ul class="nav-links">
+      <li><a href="image-compress.html">Image Compress</a></li>
+      <li><a href="pdf-compress.html">PDF Compress</a></li>
+      <li><a href="video-compress.html">Video Compress</a></li>
+      <li><a href="pdf-convert.html">PDF Convert</a></li>
+      <li><a href="image-convert.html">Image Convert</a></li>
+      <li><a href="video-convert.html" class="active">Video Convert</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="tool-hero">
+  <div class="tool-hero-grid"></div>
+  <div class="breadcrumb">
+    <a href="index.html">Home</a> <span style="color:var(--text-3)">›</span> <span style="color:var(--text-2)">Video Converter</span>
+  </div>
+  <h1>🔄 Video <span class="gradient-text">Converter</span></h1>
+  <p>Convert video files between formats directly in your browser — free, private, no upload required.</p>
+  <div class="tag-strip">
+    <span>MP4 → WebM</span><span>MOV → WebM</span><span>AVI → WebM</span><span>Free</span><span>No Upload</span>
+  </div>
+</section>
+
+<div class="tool-workspace">
+
+  <p style="font-size:0.72rem;font-weight:800;color:var(--text-3);margin-bottom:10px;text-transform:uppercase;letter-spacing:1.5px">Quick Convert</p>
+  <div class="quick-btns">
+    <button class="quick-btn" onclick="setQuick('webm','vp9')">MP4 → WebM</button>
+    <button class="quick-btn" onclick="setQuick('webm','vp8')">MOV → WebM</button>
+    <button class="quick-btn" onclick="setQuick('webm','vp9')">AVI → WebM</button>
+    <button class="quick-btn" onclick="setQuick('mp4','h264')">Any → MP4 (if supported)</button>
+  </div>
+
+  <!-- Upload Zone -->
+  <div class="upload-zone" id="uploadZone">
+    <div class="upload-icon-wrap">🔄</div>
+    <h3>Select a video file</h3>
+    <p>Supports MP4, WebM, MOV, AVI, and most common video formats</p>
+    <div class="upload-formats">
+      <span class="format-tag">MP4</span><span class="format-tag">WebM</span>
+      <span class="format-tag">MOV</span><span class="format-tag">AVI</span>
+      <span class="format-tag">MKV</span>
+    </div>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📁 Choose Video</button>
+    <input type="file" id="fileInput" accept="video/*" style="display:none" />
+  </div>
+
+  <!-- Video Preview -->
+  <div class="video-preview-wrap" id="videoPreview" style="display:none">
+    <video class="video-el" id="videoEl" controls></video>
+    <div class="vid-meta" id="vidMeta"></div>
+  </div>
+
+  <!-- Conversion Settings -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-title">🔄 Conversion Settings</div>
+
+    <div class="convert-row" style="margin-bottom:20px">
+      <span class="convert-label">Input</span>
+      <div class="convert-select" id="inputFmt" style="text-align:center;cursor:default;opacity:0.7">Auto-detect</div>
+      <div class="convert-arrow" title="Output format">→</div>
+      <span class="convert-label">Output</span>
+      <select class="convert-select" id="outputFmt" onchange="updateCodecOptions()">
+        <option value="webm" selected>WebM</option>
+        <option value="mp4">MP4 (if browser supports)</option>
+      </select>
+    </div>
+
+    <div class="form-group" style="margin-bottom:20px">
+      <label>Video Codec</label>
+      <div class="res-cards" id="codecCards">
+        <button class="res-card active" data-codec="vp9" onclick="selectCodec(this)">VP9<div class="res-label">Recommended</div></button>
+        <button class="res-card" data-codec="vp8" onclick="selectCodec(this)">VP8<div class="res-label">Compatible</div></button>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:20px">
+      <label>Target Resolution</label>
+      <div class="res-cards" id="resCards">
+        <button class="res-card active" data-h="0" onclick="selectRes(this)">Original<div class="res-label">Keep size</div></button>
+        <button class="res-card" data-h="1080" onclick="selectRes(this)">1080p<div class="res-label">Full HD</div></button>
+        <button class="res-card" data-h="720" onclick="selectRes(this)">720p<div class="res-label">HD</div></button>
+        <button class="res-card" data-h="480" onclick="selectRes(this)">480p<div class="res-label">SD</div></button>
+        <button class="res-card" data-h="360" onclick="selectRes(this)">360p<div class="res-label">Low</div></button>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Video Bitrate: <strong id="brVal">4.0</strong> Mbps</label>
+        <div class="range-wrap">
+          <input type="range" id="brSlider" min="500" max="12000" value="4000" step="100"
+            oninput="document.getElementById('brVal').textContent = (this.value/1000).toFixed(1)" />
+          <div class="range-label"><span>Smaller file</span><span>Better quality</span></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Audio Bitrate</label>
+        <select class="form-control" id="audioBr">
+          <option value="128000">128 kbps (Standard)</option>
+          <option value="192000">192 kbps (High)</option>
+          <option value="96000">96 kbps (Compact)</option>
+          <option value="64000">64 kbps (Minimum)</option>
+          <option value="0">Remove audio</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row" style="margin-top:16px">
+      <div class="form-group">
+        <label>Frame Rate</label>
+        <select class="form-control" id="fpsSelect">
+          <option value="0">Original</option>
+          <option value="60">60 fps</option>
+          <option value="30" selected>30 fps</option>
+          <option value="24">24 fps (Film)</option>
+          <option value="15">15 fps (Low)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-bar" id="actionBar" style="display:none">
+    <button class="btn btn-primary" id="convertBtn" onclick="convertVideo()">🔄 Convert Video</button>
+    <button class="btn btn-outline" onclick="clearAll()">🗑 Clear</button>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-big" id="progressPanel">
+    <div class="prog-circle" id="progCircle">
+      <div class="prog-circle-inner" id="progText">0%</div>
+    </div>
+    <div class="prog-label" id="progLabel">Converting video…</div>
+    <p style="font-size:0.78rem;color:var(--text-3);margin-top:8px">Processing happens entirely in your browser. Larger videos take more time.</p>
+  </div>
+
+  <!-- Result -->
+  <div class="result-box" id="resultBox">
+    <h3 style="position:relative;color:var(--text-1)">✅ Conversion Complete!</h3>
+    <div class="result-stats" id="resultStats"></div>
+    <div style="display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;position:relative">
+      <button class="btn btn-success" id="downloadBtn" onclick="downloadResult()">⬇️ Download Converted Video</button>
+      <button class="btn btn-outline" onclick="clearAll()">🔄 Convert Another</button>
+    </div>
+  </div>
+
+  <!-- How it Works -->
+  <div class="howto-section" style="margin-top: 40px">
+    <h3>How to Convert Video</h3>
+    <div class="howto-steps">
+      <div class="step"><div class="step-num">1</div><h4>Upload Video</h4><p>Select any video file from your device.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Choose Format</h4><p>Pick the output format, codec, resolution, and quality settings.</p></div>
+      <div class="step"><div class="step-num">3</div><h4>Download</h4><p>Click Convert and download the file in your chosen format.</p></div>
+    </div>
+  </div>
+
+  <!-- Format Guide -->
+  <div class="howto-section" style="margin-top: 24px">
+    <h3>Video Format Guide</h3>
+    <div class="format-guide">
+      <div class="format-guide-item">
+        <span>🎬</span>
+        <div><strong>WebM (VP9)</strong> — Modern, open format by Google. Excellent compression with great quality. Best for web use and sharing online.</div>
+      </div>
+      <div class="format-guide-item">
+        <span>📹</span>
+        <div><strong>WebM (VP8)</strong> — Older WebM codec. Wider browser compatibility, slightly larger files than VP9. Good fallback option.</div>
+      </div>
+      <div class="format-guide-item">
+        <span>🎞️</span>
+        <div><strong>MP4 (H.264)</strong> — Most universally compatible format. Plays on virtually every device. Browser support for encoding varies.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info" style="margin-top:24px">
+    <span>🔒 <strong>Privacy:</strong> Video conversion uses your browser's built-in MediaRecorder API. No data leaves your device. Output format availability depends on browser support.</span>
+  </div>
+</div>
+
+<div class="related-section">
+  <h3>Related Tools</h3>
+  <div class="related-grid">
+    <a href="video-compress.html" class="related-card"><span class="related-icon">🗜️</span><div><h4>Video Compressor</h4><p>Reduce video file sizes</p></div></a>
+    <a href="image-convert.html" class="related-card"><span class="related-icon">🖼️</span><div><h4>Image Converter</h4><p>Convert image formats</p></div></a>
+    <a href="pdf-convert.html" class="related-card"><span class="related-icon">📄</span><div><h4>PDF Converter</h4><p>Convert PDF ↔ Word</p></div></a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand"><a href="index.html" class="logo"><div class="logo-icon">🗜️</div><span class="logo-text">Compressly</span></a><p>Free, fast, and private online file compression and conversion tools.</p></div>
+      <div class="footer-col"><h5>Compress</h5><ul><li><a href="image-compress.html">Image</a></li><li><a href="pdf-compress.html">PDF</a></li><li><a href="video-compress.html">Video</a></li></ul></div>
+      <div class="footer-col"><h5>Convert</h5><ul><li><a href="pdf-convert.html">PDF Converter</a></li><li><a href="image-convert.html">Image Converter</a></li><li><a href="video-convert.html">Video Converter</a></li></ul></div>
+      <div class="footer-col"><h5>Info</h5><ul><li><a href="index.html#faq">FAQ</a></li><li><a href="#">Privacy</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2024 Compressly.</span><span>🔒 Files never leave your device</span></div>
+  </div>
+</footer>
+
+<script>
+let videoFile = null, resultBlob = null, targetH = 0, selectedCodec = 'vp9';
+
+function fmtBytes(b) { return b < 1024 ? b+' B' : b < 1048576 ? (b/1024).toFixed(1)+' KB' : (b/1048576).toFixed(2)+' MB'; }
+function fmtDuration(s) { const m = Math.floor(s/60); return m + ':' + String(Math.floor(s%60)).padStart(2,'0'); }
+
+function selectRes(btn) {
+  document.querySelectorAll('#resCards .res-card').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  targetH = parseInt(btn.dataset.h);
+}
+
+function selectCodec(btn) {
+  document.querySelectorAll('#codecCards .res-card').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedCodec = btn.dataset.codec;
+}
+
+function setQuick(format, codec) {
+  document.getElementById('outputFmt').value = format;
+  updateCodecOptions();
+  // Select the codec
+  document.querySelectorAll('#codecCards .res-card').forEach(b => {
+    b.classList.toggle('active', b.dataset.codec === codec);
+  });
+  selectedCodec = codec;
+}
+
+function updateCodecOptions() {
+  const fmt = document.getElementById('outputFmt').value;
+  const cards = document.getElementById('codecCards');
+  if (fmt === 'mp4') {
+    cards.innerHTML = `
+      <button class="res-card active" data-codec="h264" onclick="selectCodec(this)">H.264<div class="res-label">Universal</div></button>
+    `;
+    selectedCodec = 'h264';
+  } else {
+    cards.innerHTML = `
+      <button class="res-card active" data-codec="vp9" onclick="selectCodec(this)">VP9<div class="res-label">Recommended</div></button>
+      <button class="res-card" data-codec="vp8" onclick="selectCodec(this)">VP8<div class="res-label">Compatible</div></button>
+    `;
+    selectedCodec = 'vp9';
+  }
+}
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return; e.target.value = '';
+  videoFile = f; resultBlob = null;
+
+  const video = document.getElementById('videoEl');
+  const url = URL.createObjectURL(f);
+  video.src = url;
+
+  // Detect input format
+  const ext = f.name.split('.').pop().toUpperCase();
+  document.getElementById('inputFmt').textContent = ext + ' (' + (f.type || 'video') + ')';
+
+  video.onloadedmetadata = () => {
+    document.getElementById('vidMeta').innerHTML = `
+      <div class="vid-meta-item"><span class="vid-meta-label">File Name</span><span class="vid-meta-val">${f.name}</span></div>
+      <div class="vid-meta-item"><span class="vid-meta-label">Size</span><span class="vid-meta-val">${fmtBytes(f.size)}</span></div>
+      <div class="vid-meta-item"><span class="vid-meta-label">Duration</span><span class="vid-meta-val">${fmtDuration(video.duration)}</span></div>
+      <div class="vid-meta-item"><span class="vid-meta-label">Resolution</span><span class="vid-meta-val">${video.videoWidth}×${video.videoHeight}</span></div>
+    `;
+  };
+
+  document.getElementById('uploadZone').style.display = 'none';
+  document.getElementById('videoPreview').style.display = 'block';
+  document.getElementById('settingsPanel').classList.add('visible');
+  document.getElementById('actionBar').style.display = 'flex';
+  document.getElementById('resultBox').classList.remove('visible');
+  document.getElementById('progressPanel').classList.remove('visible');
+});
+
+function getMimeType() {
+  const fmt = document.getElementById('outputFmt').value;
+  if (fmt === 'mp4') {
+    if (MediaRecorder.isTypeSupported('video/mp4;codecs=h264')) return 'video/mp4;codecs=h264';
+    if (MediaRecorder.isTypeSupported('video/mp4')) return 'video/mp4';
+    // Fallback to webm
+    return MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm;codecs=vp8';
+  }
+  const codec = selectedCodec === 'vp9' ? 'vp9' : 'vp8';
+  return MediaRecorder.isTypeSupported(`video/webm;codecs=${codec}`) ? `video/webm;codecs=${codec}` : 'video/webm;codecs=vp8';
+}
+
+function getFileExtension(mime) {
+  if (mime.startsWith('video/mp4')) return '.mp4';
+  return '.webm';
+}
+
+async function convertVideo() {
+  if (!videoFile) return;
+  const btn = document.getElementById('convertBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Converting…';
+
+  const video = document.getElementById('videoEl');
+  const origW = video.videoWidth, origH = video.videoHeight;
+
+  let outH = targetH || origH;
+  let outW = Math.round(origW * (outH / origH));
+  if (outW % 2 !== 0) outW++;
+  if (outH % 2 !== 0) outH++;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = outW; canvas.height = outH;
+  const ctx = canvas.getContext('2d');
+
+  const videoBr = parseInt(document.getElementById('brSlider').value) * 1000;
+  const audioBr = parseInt(document.getElementById('audioBr').value);
+  const fps = parseInt(document.getElementById('fpsSelect').value) || 30;
+
+  const progPanel = document.getElementById('progressPanel');
+  progPanel.classList.add('visible');
+
+  try {
+    const stream = canvas.captureStream(fps);
+
+    // Add audio track if desired
+    if (audioBr > 0) {
+      try {
+        const audioCtx = new AudioContext();
+        const source = audioCtx.createMediaElementSource(video);
+        const dest = audioCtx.createMediaStreamDestination();
+        source.connect(dest);
+        source.connect(audioCtx.destination);
+        dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+      } catch(e) { /* no audio or not supported */ }
+    }
+
+    const mimeType = getMimeType();
+    const actualFmt = mimeType.startsWith('video/mp4') ? 'MP4' : 'WebM';
+    document.getElementById('progLabel').textContent = `Converting to ${actualFmt}…`;
+
+    const recorder = new MediaRecorder(stream, {
+      mimeType,
+      videoBitsPerSecond: videoBr,
+      audioBitsPerSecond: audioBr || undefined
+    });
+    const chunks = [];
+
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    const done = new Promise(resolve => { recorder.onstop = () => resolve(); });
+
+    video.currentTime = 0;
+    video.muted = false;
+    recorder.start(100);
+
+    const duration = video.duration;
+    video.play();
+
+    const drawFrame = () => {
+      if (video.paused || video.ended) {
+        recorder.stop();
+        return;
+      }
+      ctx.drawImage(video, 0, 0, outW, outH);
+      const pct = Math.min(99, Math.round((video.currentTime / duration) * 100));
+      document.getElementById('progCircle').style.setProperty('--prog', pct + '%');
+      document.getElementById('progText').textContent = pct + '%';
+      requestAnimationFrame(drawFrame);
+    };
+
+    requestAnimationFrame(drawFrame);
+
+    await new Promise(resolve => { video.onended = resolve; video.onpause = resolve; });
+    recorder.stop();
+    await done;
+
+    resultBlob = new Blob(chunks, { type: mimeType });
+
+    const codecName = selectedCodec.toUpperCase();
+    document.getElementById('resultStats').innerHTML = `
+      <div class="r-stat"><div class="v">${fmtBytes(videoFile.size)}</div><div class="l">Original</div></div>
+      <div class="r-arrow">→</div>
+      <div class="r-stat"><div class="v">${fmtBytes(resultBlob.size)}</div><div class="l">Converted (${actualFmt})</div></div>
+      <div class="r-chip">✅ ${actualFmt} ${codecName}</div>
+    `;
+
+    document.getElementById('progCircle').style.setProperty('--prog', '100%');
+    document.getElementById('progText').textContent = '100%';
+    document.getElementById('progLabel').textContent = 'Done!';
+    document.getElementById('resultBox').classList.add('visible');
+    document.getElementById('resultBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  } catch(e) {
+    alert('Conversion error: ' + e.message);
+  }
+
+  video.pause(); video.currentTime = 0;
+  btn.disabled = false; btn.innerHTML = '🔄 Convert Video';
+}
+
+function downloadResult() {
+  if (!resultBlob) return;
+  const mimeType = resultBlob.type;
+  const ext = getFileExtension(mimeType);
+  const name = videoFile.name.replace(/\.[^.]+$/, '') + '_converted' + ext;
+  const url = URL.createObjectURL(resultBlob);
+  const a = document.createElement('a'); a.href = url; a.download = name;
+  a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function clearAll() {
+  videoFile = null; resultBlob = null;
+  document.getElementById('videoEl').src = '';
+  document.getElementById('uploadZone').style.display = '';
+  document.getElementById('videoPreview').style.display = 'none';
+  document.getElementById('settingsPanel').classList.remove('visible');
+  document.getElementById('actionBar').style.display = 'none';
+  document.getElementById('progressPanel').classList.remove('visible');
+  document.getElementById('resultBox').classList.remove('visible');
+  document.getElementById('inputFmt').textContent = 'Auto-detect';
+}
+</script>
+</body>
+</html>
